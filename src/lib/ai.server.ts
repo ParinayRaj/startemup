@@ -1,6 +1,6 @@
-// Server-only Gemma 4 calls through the Google Gemini API.
-export const MODEL_ID = "gemma-4-26b-a4b-it";
-export const MODEL_LABEL = "Gemma 4";
+// Server-only AI calls through the Google Gemini API. The model name is never shown in the UI.
+export const MODEL_ID = "gemini-2.5-flash";
+export const MODEL_LABEL = "FoundrLens AI";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
@@ -22,17 +22,18 @@ export async function gemmaChat(system: string, messages: Msg[], temperature = 0
       signal: AbortSignal.timeout(170_000),
     });
   } catch (e) {
-    if (e instanceof Error && e.name === "TimeoutError") throw new AiError("Gemma 4 took too long to respond. Please try again.");
-    throw new AiError("Could not reach Gemma 4. Please try again.");
+    if (e instanceof Error && e.name === "TimeoutError") throw new AiError("The AI took too long to respond. Please try again.");
+    throw new AiError("Could not reach the AI. Please try again.");
   }
-  if (res.status === 429) throw new AiError("Gemma 4 is busy right now (rate limit). Please wait a moment and retry.");
+  if (res.status === 429) throw new AiError("The AI is busy right now (rate limit). Please wait a moment and retry.");
   if (!res.ok) {
     console.error("Gemini API error", res.status, (await res.text()).slice(0, 300));
-    throw new AiError("Gemma 4 returned an error. Please try again.");
+    if (res.status === 401 || res.status === 403) throw new AiError("The AI service key is invalid. Please update it.");
+    throw new AiError("The AI returned an error. Please try again.");
   }
   const data = (await res.json()) as { candidates?: { content?: { parts?: { text?: string; thought?: boolean }[] } }[] };
   const text = (data.candidates?.[0]?.content?.parts ?? []).filter((p) => !p.thought && p.text).map((p) => p.text).join("").trim();
-  if (!text) throw new AiError("Gemma 4 returned an empty reply. Please retry.");
+  if (!text) throw new AiError("The AI returned an empty reply. Please retry.");
   return text;
 }
 
