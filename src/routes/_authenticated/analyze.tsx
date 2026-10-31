@@ -1,3 +1,4 @@
+import { AiStatus } from "@/components/foundrlens/ai-status";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, AlertCircle, Loader2, BookmarkPlus, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -75,14 +76,14 @@ function AnalyzePage() {
   }
   return <div className="min-h-screen bg-background"><Navbar/><main className="mx-auto w-full max-w-[880px] px-4 pb-24 pt-10 sm:px-6">
     <Link to="/" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"><ArrowLeft className="size-3.5"/>Back to home</Link>
-    <div className="mt-6"><h1 className="text-2xl font-semibold tracking-tight text-foreground">Startup Idea Analysis</h1><p className="mt-2 text-sm text-muted-foreground">Get a structured first-pass assessment from FoundrLens AI. Your idea is sent to Google's Gemini API to generate it. Treat estimates as hypotheses to validate.</p></div>
+    <div className="mt-6"><div className="flex flex-wrap items-center justify-between gap-3"><h1 className="text-2xl font-semibold tracking-tight text-foreground">Startup Idea Analysis</h1><AiStatus busy={loading||roadmapLoading}/></div><p className="mt-2 text-sm text-muted-foreground">Get a structured first-pass assessment from FoundrLens AI. Your idea is sent to Google's Gemini API to generate it. Treat estimates as hypotheses to validate.</p></div>
     <form className="mt-6 rounded-[10px] border border-border bg-card p-4" onSubmit={e=>{e.preventDefault();void run(draft);}}>
       <label htmlFor="idea" className="text-sm font-medium text-foreground">Describe your startup idea</label>
       <textarea id="idea" value={draft} onChange={e=>setDraft(e.target.value)} rows={4} placeholder="Who has the problem, what is the problem, and how will your solution help?" className="mt-2 w-full resize-y rounded-md border border-input bg-background p-3 text-sm text-foreground outline-none focus:border-primary"/>
       <div className="mt-3 grid gap-3 sm:grid-cols-3">
         {([["Target audience",audience,setAudience,"e.g. college students in India"],["Problem",problem,setProblem,"What pain do they feel today?"],["Market details",market,setMarket,"Region, pricing, alternatives…"]] as const).map(([l,v,set,ph])=><label key={l} className="text-xs text-muted-foreground">{l} <span className="text-tertiary">(optional)</span><input value={v} onChange={e=>set(e.target.value)} maxLength={500} placeholder={ph} className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-primary"/></label>)}
       </div>
-      <button disabled={loading||draft.trim().length<10} className="mt-3 inline-flex h-10 items-center gap-2 rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground disabled:opacity-50">{loading?<Loader2 className="size-4 animate-spin"/>:<Sparkles className="size-4"/>}{loading?"Analyzing…":"Analyze my idea"}</button>
+      <button disabled={loading||draft.trim().length<10} className="mt-3 inline-flex h-10 items-center gap-2 rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground disabled:opacity-50">{loading?<Loader2 className="size-4 animate-spin"/>:<Sparkles className="size-4"/>}{loading?"Analyzing via Gemini API…":"Analyze my idea"}</button>
     </form>
     {error&&<div role="alert" className="mt-4 flex gap-2 rounded-md border border-warning/30 bg-card p-3 text-sm text-muted-foreground"><AlertCircle className="size-4 shrink-0 text-warning"/>{error}</div>}
     {result&&<>
