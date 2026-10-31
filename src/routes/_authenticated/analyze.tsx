@@ -1,7 +1,7 @@
 import { AiStatus } from "@/components/foundrlens/ai-status";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, AlertCircle, Loader2, BookmarkPlus, Sparkles } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Navbar } from "@/components/foundrlens/navbar";
 import { api, type IdeaAnalysis } from "@/lib/api";
 import { toast } from "sonner";
@@ -50,7 +50,8 @@ function AnalyzePage() {
     catch(e){setError(e instanceof Error?e.message:"Analysis failed. Please try again.");}
     finally{setLoading(false);}
   }
-  useEffect(()=>{if(idea) void run(idea);},[idea]);
+  const lastAutoRun = useRef<string|null>(null);
+  useEffect(()=>{if(idea && lastAutoRun.current!==idea){lastAutoRun.current=idea; void run(idea);}},[idea]);
   async function save(){
     if(!result)return;
     try{
