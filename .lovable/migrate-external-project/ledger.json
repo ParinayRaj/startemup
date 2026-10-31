@@ -1,0 +1,9 @@
+[
+  {"capability": "code", "source": "FoundrLens zip", "outcome": "migrate", "status": "done", "next_action": null},
+  {"capability": "schema", "source": "drizzle migration", "outcome": "migrate", "status": "done", "next_action": null},
+  {"capability": "storage bucket eligibility-docs", "source": "source schema", "outcome": "migrate", "status": "done", "next_action": null},
+  {"capability": "AI (Ollama Gemma) -> Gemma 4 via Gemini API", "source": "backend/main.py", "outcome": "replace", "status": "verify", "next_action": "signed-in test"},
+  {"capability": "records", "source": "old Cloud database", "outcome": "migrate", "status": "pending", "next_action": "user exports tables as CSV"},
+  {"capability": "auth users", "source": "old Cloud auth", "outcome": "migrate", "status": "pending", "next_action": "user exports users"},
+  {"capability": "Economic Times via Anakin", "source": "connector", "outcome": "preserve", "status": "pending", "next_action": "connect Anakin in this project"}
+]
