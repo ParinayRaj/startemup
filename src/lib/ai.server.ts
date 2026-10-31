@@ -1,5 +1,6 @@
 // Server-only AI calls through the Google Gemini API. The model name is never shown in the UI.
-export const MODEL_ID = "gemini-2.5-flash";
+// flash-lite has a much larger free-tier daily quota than flash (which allows only 20 requests/day).
+export const MODEL_ID = "gemini-2.5-flash-lite";
 export const MODEL_LABEL = "FoundrLens AI";
 
 type Msg = { role: "user" | "assistant"; content: string };
@@ -7,7 +8,7 @@ type Msg = { role: "user" | "assistant"; content: string };
 export class AiError extends Error {}
 
 export async function gemmaChat(system: string, messages: Msg[], temperature = 0.25): Promise<string> {
-  const key = process.env["GEMINI_API_KEY"];
+  const key = process.env["GOOGLE_API_KEY"] || process.env["GEMINI_API_KEY"];
   if (!key) throw new AiError("The AI service is not configured yet.");
   let res: Response;
   try {
@@ -25,7 +26,10 @@ export async function gemmaChat(system: string, messages: Msg[], temperature = 0
     if (e instanceof Error && e.name === "TimeoutError") throw new AiError("The AI took too long to respond. Please try again.");
     throw new AiError("Could not reach the AI. Please try again.");
   }
-  if (res.status === 429) throw new AiError("The AI is busy right now (rate limit). Please wait a moment and retry.");
+  if (res.status === 429) {
+    console.error("Gemini API rate limit", MODEL_ID, (await res.text()).slice(0, 300));
+    throw new AiError("The AI has hit its usage limit for now. Please wait a moment and retry.");
+  }
   if (!res.ok) {
     console.error("Gemini API error", res.status, (await res.text()).slice(0, 300));
     if (res.status === 401 || res.status === 403) throw new AiError("The AI service key is invalid. Please update it.");
