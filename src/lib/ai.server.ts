@@ -1,5 +1,6 @@
 // Server-only AI calls through the Google Gemini API. The model name is never shown in the UI.
-export const MODEL_ID = "gemini-2.5-flash";
+// flash-lite has a much larger free-tier daily quota than flash (which allows only 20 requests/day).
+export const MODEL_ID = "gemini-2.5-flash-lite";
 export const MODEL_LABEL = "FoundrLens AI";
 
 type Msg = { role: "user" | "assistant"; content: string };
