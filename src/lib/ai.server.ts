@@ -7,7 +7,7 @@ type Msg = { role: "user" | "assistant"; content: string };
 export class AiError extends Error {}
 
 export async function gemmaChat(system: string, messages: Msg[], temperature = 0.25): Promise<string> {
-  const key = process.env["GEMINI_API_KEY"];
+  const key = process.env["GOOGLE_API_KEY"] || process.env["GEMINI_API_KEY"];
   if (!key) throw new AiError("The AI service is not configured yet.");
   let res: Response;
   try {
